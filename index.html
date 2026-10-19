@@ -86,16 +86,15 @@
       }
 
       .progress-card { padding: 24px; }
-      .progress-heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        gap: 12px;
-      }
+      .progress-heading { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 8px; }
+      .intake-metric, .goal-metric { display: flex; flex-direction: column; align-items: center; text-align: center; }
+      .intake-metric + .intake-metric { border-left: 1px solid #344e68; }
 
-      .section-label { margin: 0; color: #d5e3f1; font-size: 14px; font-weight: 550; }
-      .total { margin: 7px 0 0; font-size: clamp(38px, 8vw, 46px); font-weight: 780; letter-spacing: -.05em; }
-      .total span { color: #d2e3f3; font-size: 19px; font-weight: 550; letter-spacing: 0; }
+      .section-label { margin: 0; color: #fff; font-size: 14px; font-weight: 550; }
+      .total { margin: 9px 0 0; font-size: clamp(28px, 7.5vw, 40px); font-weight: 780; letter-spacing: -.04em; }
+      .total span { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: 0; }
+      .goal-metric { margin-top: 20px; }
+      .goal-metric .section-label { margin-bottom: 8px; color: #fff; font-size: 16px; font-weight: 650; }
 
       .unit-toggle { display: flex; padding: 4px; border: 1px solid #45617d; border-radius: 12px; background: #0a192a; }
       .unit-button {
@@ -105,9 +104,9 @@
         border: 0;
         border-radius: 8px;
         background: transparent;
-        color: #d5e3f1;
+        color: #fff;
         cursor: pointer;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 650;
       }
 
@@ -116,9 +115,9 @@
       .goal-editor {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 7px;
-        margin-top: 3px;
-        color: #d5e3f1;
+        color: #fff;
         font-size: 13px;
       }
 
@@ -132,7 +131,7 @@
         background: #091827;
         color: #fff;
         text-align: right;
-        font-size: 14px;
+        font-size: 16px;
       }
 
       input:focus-visible, button:focus-visible {
@@ -141,6 +140,7 @@
       }
 
       .progress-track {
+        position: relative;
         height: 11px;
         margin-top: 20px;
         overflow: hidden;
@@ -148,10 +148,23 @@
         background: #304a65;
       }
 
-      .progress-fill {
-        width: 0;
+      .progress-fill, .alternative-fill {
+        position: absolute;
+        top: 0;
         height: 100%;
-        border-radius: inherit;
+        transition: width .35s ease;
+      }
+
+      .alternative-fill {
+        left: 0;
+        width: 0;
+        background: #a56bdf;
+      }
+
+      .progress-fill {
+        left: 0;
+        width: 0;
+        border-radius: 99px;
         background: linear-gradient(90deg, #168de0, #63caff);
         transition: width .35s ease;
       }
@@ -161,15 +174,59 @@
         justify-content: space-between;
         gap: 12px;
         margin-top: 10px;
-        color: #d5e3f1;
-        font-size: 13px;
+        color: #fff;
+        font-size: 14px;
       }
 
+      .progress-legend { display: flex; justify-content: center; gap: 18px; margin-top: 11px; color: #fff; font-size: 13px; }
+      .legend-item { display: flex; align-items: center; gap: 7px; }
+      .legend-swatch { width: 11px; height: 11px; border-radius: 50%; background: linear-gradient(90deg, #168de0, #63caff); }
+      .legend-swatch.alternative { background: #a56bdf; }
+
+      .calendar-card, .history-card { margin-top: 16px; padding: 23px 24px; }
+      .calendar-heading, .month-navigation, .history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .calendar-heading h2 { margin-bottom: 0; }
+      .month-navigation { justify-content: end; }
+      .month-label { min-width: 130px; color: #fff; font-size: 15px; font-weight: 650; text-align: center; }
+      .month-button {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid #496580;
+        border-radius: 10px;
+        background: #091827;
+        color: #fff;
+        cursor: pointer;
+        font-size: 18px;
+      }
+      .month-button:disabled { opacity: .4; cursor: default; }
+      .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; margin-top: 12px; }
+      .weekday, .calendar-day { display: grid; min-height: 38px; place-items: center; }
+      .weekday { color: #d5e3f1; font-size: 12px; font-weight: 650; }
+      .calendar-day {
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: #fff;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .calendar-day:hover:not(:disabled) { border-color: #507293; background: #183550; }
+      .calendar-day[aria-pressed="true"] { border-color: #60bfff; background: #116da8; font-weight: 750; }
+      .calendar-day:disabled { color: #71849a; cursor: default; }
+      .calendar-day.has-entries::after { position: absolute; bottom: 3px; width: 5px; height: 5px; border-radius: 50%; background: #c69aff; content: ""; }
+      .selected-day-summary { display: flex; justify-content: space-between; gap: 12px; margin-top: 15px; padding-top: 14px; border-top: 1px solid #344e68; color: #fff; font-size: 13px; }
+      .selected-day-summary span { color: #d5e3f1; }
+
       .add-card { margin-top: 16px; padding: 24px; }
-      h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+      h2 { margin: 0 0 14px; font-size: 18px; letter-spacing: -.02em; }
+      .history-heading h2 { margin-bottom: 0; }
+      .heading-examples { color: #d5e3f1; font-size: 15px; font-weight: 550; letter-spacing: 0; }
       .card-hint { display: none; }
 
-      .quick-adds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+      .quick-adds { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
       .quick-add {
         display: flex;
         min-height: 82px;
@@ -185,6 +242,34 @@
       }
 
       .quick-add:hover { transform: translateY(-2px); border-color: #397eb0; background: #142c45; }
+      .custom-container { position: relative; min-width: 0; }
+      .custom-container .quick-add { width: 100%; min-height: 82px; padding-right: 34px; }
+      .container-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        display: grid;
+        width: 27px;
+        height: 27px;
+        place-items: center;
+        border: 1px solid #496580;
+        border-radius: 8px;
+        background: #091827;
+        color: #e4eef8;
+        cursor: pointer;
+        font-size: 17px;
+        line-height: 1;
+      }
+      .container-remove:hover { border-color: #a95a67; background: #512d37; color: #fff; }
+      .container-form, .alternative-form {
+        display: grid;
+        grid-template-columns: minmax(100px, 1fr) minmax(100px, .8fr) auto;
+        gap: 9px;
+        margin-top: 14px;
+      }
+      .alternative-card { margin-top: 16px; padding: 24px; }
+      .alternative-form { grid-template-columns: minmax(100px, 1fr) minmax(100px, .8fr) auto; }
+      .alternative-card .container-heading { margin-top: 14px; }
       .drink-icon {
         display: grid;
         width: 43px;
@@ -199,15 +284,17 @@
       .drink-name { display: block; font-size: 14px; font-weight: 700; }
       .drink-amount { display: block; margin-top: 4px; color: #d5e3f1; font-size: 13px; }
 
+      .container-heading { margin: 18px 0 0; font-size: 15px; font-weight: 650; }
+
       .custom-form {
         display: flex;
         gap: 10px;
         margin-top: 13px;
       }
 
-      .custom-form input {
+      .custom-form input { flex: 1; }
+      .custom-form input, .container-form input, .alternative-form input {
         min-width: 0;
-        flex: 1;
         padding: 12px 13px;
         border: 1px solid #496580;
         border-radius: 12px;
@@ -218,6 +305,7 @@
       }
 
       .custom-form input::placeholder { color: #bdcfe1; }
+      .container-form input::placeholder, .alternative-form input::placeholder { color: #bdcfe1; }
       .primary-button {
         padding: 0 20px;
         border: 0;
@@ -232,7 +320,6 @@
 
       .primary-button:hover { background: #32a5f3; }
 
-      .history-card { margin-top: 16px; padding: 23px 24px; }
       .history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
       .entry-count { color: #d5e3f1; font-size: 13px; }
       .history-list { margin: 13px 0 0; padding: 0; list-style: none; }
@@ -281,15 +368,25 @@
         .app-shell { width: min(100% - 24px, 680px); padding-top: 24px; }
         header { margin-bottom: 28px; }
         .date-pill { padding: 7px 9px; font-size: 12px; }
-        .progress-card, .add-card, .history-card { padding: 18px; }
-        .progress-heading { align-items: start; }
-        .quick-adds { gap: 8px; }
+        .progress-card, .add-card, .history-card, .calendar-card { padding: 18px; }
+        .progress-heading { gap: 4px; }
+        .section-label { font-size: 14px; }
+        .total { font-size: clamp(27px, 7.5vw, 32px); }
+        .total span { font-size: 14px; }
+        .goal-metric { margin-top: 17px; }
+        .quick-adds { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px; }
         .quick-add { min-height: 94px; flex-direction: column; justify-content: center; gap: 5px; padding: 8px 4px; text-align: center; }
+        .custom-container .quick-add { min-height: 94px; padding: 8px 27px 8px 4px; }
         .drink-icon { width: 34px; height: 34px; font-size: 19px; }
         .drink-name { font-size: 13px; }
-        .drink-amount { font-size: 12px; }
+        .drink-amount { font-size: 13px; }
         .custom-form { gap: 8px; }
+        .container-form, .alternative-form { grid-template-columns: 1fr 1fr; gap: 8px; }
+        .container-form .primary-button, .alternative-form .primary-button { min-height: 42px; grid-column: 1 / -1; }
         .primary-button { padding-inline: 14px; }
+        .calendar-grid { gap: 3px; }
+        .weekday, .calendar-day { min-height: 36px; }
+        .selected-day-summary { flex-wrap: wrap; }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -323,41 +420,64 @@
 
       <section class="card progress-card" aria-labelledby="progress-heading">
         <div class="progress-heading">
-          <div>
-            <p class="section-label" id="progress-heading">Today's intake</p>
-            <p class="total"><span id="total-amount">0</span> <span id="total-unit">mL</span></p>
+          <div class="intake-metric">
+            <p class="section-label" id="progress-heading">Water</p>
+            <p class="total"><span id="water-amount">0</span> <span class="volume-unit">mL</span></p>
           </div>
+          <div class="intake-metric">
+            <p class="section-label">Alternative fluid</p>
+            <p class="total"><span id="alternative-amount">0</span> <span class="volume-unit">mL</span></p>
+          </div>
+          <div class="intake-metric">
+            <p class="section-label">Total fluid</p>
+            <p class="total"><span id="total-amount">0</span> <span class="volume-unit">mL</span></p>
+          </div>
+        </div>
+        <div class="goal-metric">
+          <p class="section-label">Daily water goal</p>
           <div class="goal-editor">
-            <label for="goal-input">Daily goal</label>
-            <input id="goal-input" type="number" min="1" max="20000" step="50" inputmode="decimal" aria-label="Daily goal in millilitres">
+            <input id="goal-input" type="number" min="1" max="20000" step="50" inputmode="decimal" aria-label="Daily water goal in millilitres">
             <span id="goal-unit">mL</span>
           </div>
         </div>
-        <div class="progress-track" id="progress-track" role="progressbar" aria-label="Daily water goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-track" id="progress-track" role="progressbar" aria-label="Water and alternative fluid compared with the daily water goal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="alternative-fill" id="alternative-fill"></div>
           <div class="progress-fill" id="progress-fill"></div>
         </div>
         <div class="progress-caption">
           <span id="progress-message">0% of daily goal</span>
           <span id="remaining-amount"></span>
         </div>
+        <div class="progress-legend" aria-label="Bar colors">
+          <span class="legend-item"><span class="legend-swatch" aria-hidden="true"></span>Water</span>
+          <span class="legend-item"><span class="legend-swatch alternative" aria-hidden="true"></span>Alternative fluid</span>
+        </div>
       </section>
 
       <section class="card add-card" aria-labelledby="add-heading">
         <h2 id="add-heading">Add water</h2>
         <div class="quick-adds">
-          <button class="quick-add" type="button" data-amount="250" data-label="Glass of water">
+          <button class="quick-add" type="button" data-amount="250" data-label="Glass of water" data-type="water">
             <span class="drink-icon" aria-hidden="true">🥛</span>
             <span><span class="drink-name">Glass</span><span class="drink-amount" data-ml="250">250 mL</span></span>
           </button>
-          <button class="quick-add" type="button" data-amount="500" data-label="Medium bottle">
+          <button class="quick-add" type="button" data-amount="500" data-label="Medium bottle" data-type="water">
             <span class="drink-icon" aria-hidden="true">🧴</span>
             <span><span class="drink-name">Medium bottle</span><span class="drink-amount" data-ml="500">500 mL</span></span>
           </button>
-          <button class="quick-add" type="button" data-amount="1000" data-label="Large bottle">
-            <span class="drink-icon" aria-hidden="true">🧴</span>
+          <button class="quick-add" type="button" data-amount="1000" data-label="Large bottle" data-type="water">
+            <span class="drink-icon" aria-hidden="true">🫙</span>
             <span><span class="drink-name">Large bottle</span><span class="drink-amount" data-ml="1000">1,000 mL</span></span>
           </button>
         </div>
+        <h3 class="container-heading">Custom containers</h3>
+        <form class="container-form" id="container-form">
+          <label class="visually-hidden" for="container-name">Container name</label>
+          <input class="container-name" id="container-name" type="text" maxlength="30" placeholder="Container name" required>
+          <label class="visually-hidden" for="container-amount">Container amount</label>
+          <input class="container-amount" id="container-amount" type="number" min="1" max="5000" step="1" placeholder="Amount (mL)" inputmode="numeric" required>
+          <button class="primary-button" type="submit">Create container</button>
+        </form>
         <form class="custom-form" id="custom-form">
           <label for="custom-amount" class="visually-hidden">Custom water amount</label>
           <input id="custom-amount" type="number" min="1" max="5000" step="1" placeholder="Amount (mL)" inputmode="numeric" required>
@@ -366,13 +486,65 @@
         <p class="notice" id="notice" role="status" aria-live="polite"></p>
       </section>
 
+      <section class="card alternative-card" aria-labelledby="alternative-heading">
+        <h2 id="alternative-heading">Alternative fluid <span class="heading-examples">(coffee, milk, soda, juice)</span></h2>
+        <div class="quick-adds alternative-quick-adds">
+          <button class="quick-add" type="button" data-amount="250" data-label="Glass" data-type="alternative">
+            <span class="drink-icon" aria-hidden="true">☕</span>
+            <span><span class="drink-name">Glass</span><span class="drink-amount" data-ml="250">250 mL</span></span>
+          </button>
+          <button class="quick-add" type="button" data-amount="500" data-label="Medium bottle" data-type="alternative">
+            <span class="drink-icon" aria-hidden="true">🥤</span>
+            <span><span class="drink-name">Medium bottle</span><span class="drink-amount" data-ml="500">500 mL</span></span>
+          </button>
+          <button class="quick-add" type="button" data-amount="1000" data-label="Large bottle" data-type="alternative">
+            <span class="drink-icon" aria-hidden="true">🧃</span>
+            <span><span class="drink-name">Large bottle</span><span class="drink-amount" data-ml="1000">1,000 mL</span></span>
+          </button>
+        </div>
+        <div class="quick-adds alternative-containers" aria-label="Custom containers for alternative fluid"></div>
+        <h3 class="container-heading">Custom containers</h3>
+        <form class="container-form" id="alternative-container-form">
+          <label class="visually-hidden" for="alternative-container-name">Alternative container name</label>
+          <input class="container-name" id="alternative-container-name" type="text" maxlength="30" placeholder="Container name" required>
+          <label class="visually-hidden" for="alternative-container-amount">Alternative container amount</label>
+          <input class="container-amount" id="alternative-container-amount" type="number" min="1" max="5000" step="1" placeholder="Amount (mL)" inputmode="numeric" required>
+          <button class="primary-button" type="submit">Create container</button>
+        </form>
+        <form class="alternative-form" id="alternative-form">
+          <label class="visually-hidden" for="alternative-name">Drink name</label>
+          <input id="alternative-name" type="text" maxlength="30" placeholder="Drink (e.g. coffee)" required>
+          <label class="visually-hidden" for="alternative-volume">Drink amount</label>
+          <input id="alternative-volume" type="number" min="1" max="5000" step="1" placeholder="Amount (mL)" inputmode="numeric" required>
+          <button class="primary-button" type="submit">Add fluid</button>
+        </form>
+      </section>
+
       <section class="card history-card" aria-labelledby="history-heading">
         <div class="history-heading">
-          <h2 id="history-heading">Today</h2>
+          <h2 id="history-heading">Drinks</h2>
           <span class="entry-count" id="entry-count">0 entries</span>
         </div>
         <ul class="history-list" id="history-list"></ul>
         <p class="empty-state" id="empty-state">No drinks yet</p>
+      </section>
+
+      <section class="card calendar-card" aria-labelledby="calendar-heading">
+        <div class="calendar-heading">
+          <h2 id="calendar-heading">Calendar</h2>
+          <div class="month-navigation">
+            <button class="month-button" id="previous-month" type="button" aria-label="Previous month">‹</button>
+            <span class="month-label" id="calendar-month"></span>
+            <button class="month-button" id="next-month" type="button" aria-label="Next month">›</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendar-grid" role="group" aria-label="Daily water intake calendar"></div>
+        <div class="selected-day-summary" aria-live="polite">
+          <strong id="selected-date-label"></strong>
+          <span>Water <strong id="selected-water">0 mL</strong></span>
+          <span>Alternative <strong id="selected-alternative">0 mL</strong></span>
+          <span>Total <strong id="selected-total">0 mL</strong></span>
+        </div>
       </section>
     </main>
 
@@ -393,19 +565,32 @@
         const ENTRIES_KEY = "blueflow.entries";
         const GOAL_KEY = "blueflow.goal";
         const UNIT_KEY = "blueflow.unit";
+        const CONTAINERS_KEY = "blueflow.containers";
+        const LEGACY_SOURCES_KEY = "blueflow.sources";
         const DEFAULT_GOAL_ML = 2000;
         const MAX_INTAKE_ML = 5000;
         const dateElement = document.querySelector("#today-date");
+        const waterElement = document.querySelector("#water-amount");
+        const alternativeElement = document.querySelector("#alternative-amount");
         const totalElement = document.querySelector("#total-amount");
-        const totalUnit = document.querySelector("#total-unit");
         const goalInput = document.querySelector("#goal-input");
         const goalUnit = document.querySelector("#goal-unit");
         const mlButton = document.querySelector("#ml-button");
         const lButton = document.querySelector("#l-button");
         const progressTrack = document.querySelector("#progress-track");
         const progressFill = document.querySelector("#progress-fill");
+        const alternativeFill = document.querySelector("#alternative-fill");
         const progressMessage = document.querySelector("#progress-message");
         const remainingElement = document.querySelector("#remaining-amount");
+        const calendarGrid = document.querySelector("#calendar-grid");
+        const calendarMonth = document.querySelector("#calendar-month");
+        const previousMonthButton = document.querySelector("#previous-month");
+        const nextMonthButton = document.querySelector("#next-month");
+        const selectedDateLabel = document.querySelector("#selected-date-label");
+        const selectedWater = document.querySelector("#selected-water");
+        const selectedAlternative = document.querySelector("#selected-alternative");
+        const selectedTotal = document.querySelector("#selected-total");
+        const historyHeading = document.querySelector("#history-heading");
         const historyList = document.querySelector("#history-list");
         const emptyState = document.querySelector("#empty-state");
         const entryCount = document.querySelector("#entry-count");
@@ -413,16 +598,28 @@
         const customForm = document.querySelector("#custom-form");
         const customAmount = document.querySelector("#custom-amount");
         const customAmountLabel = document.querySelector('label[for="custom-amount"]');
+        const containerForms = document.querySelectorAll(".container-form");
+        const containerAmounts = document.querySelectorAll(".container-amount");
+        const alternativeForm = document.querySelector("#alternative-form");
+        const alternativeName = document.querySelector("#alternative-name");
+        const alternativeVolume = document.querySelector("#alternative-volume");
+        const quickAdds = document.querySelector(".quick-adds");
+        const alternativeContainers = document.querySelector(".alternative-containers");
         const quickAddAmounts = document.querySelectorAll(".drink-amount");
         const today = new Date();
         const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
         const dateFormatter = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" });
         let entries = readEntries();
+        let containers = readContainers();
         let dailyGoal = readGoal();
         let unit = readUnit();
+        let selectedDate = todayKey;
+        let displayedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
         dateElement.dateTime = todayKey;
         dateElement.textContent = dateFormatter.format(today);
+        previousMonthButton.addEventListener("click", () => changeMonth(-1));
+        nextMonthButton.addEventListener("click", () => changeMonth(1));
 
         function readEntries() {
           try {
@@ -432,7 +629,10 @@
               entry && typeof entry.id === "string" && typeof entry.date === "string" &&
               typeof entry.label === "string" && Number.isFinite(entry.amount) &&
               Number.isFinite(entry.time) && entry.amount > 0
-            );
+            ).map((entry) => ({
+              ...entry,
+              type: entry.type === "alternative" ? "alternative" : "water"
+            }));
           } catch (error) {
             console.error("Could not load saved water entries.", error);
             notice.textContent = "Saved entries could not be loaded. You can still add water.";
@@ -447,6 +647,22 @@
           } catch (error) {
             console.error("Could not load the saved daily goal.", error);
             return DEFAULT_GOAL_ML;
+          }
+        }
+
+        function readContainers() {
+          try {
+            const savedValue = localStorage.getItem(CONTAINERS_KEY) ?? localStorage.getItem(LEGACY_SOURCES_KEY) ?? "[]";
+            const saved = JSON.parse(savedValue);
+            if (!Array.isArray(saved)) throw new Error("Saved containers are not a list.");
+            return saved.filter((container) =>
+              container && typeof container.id === "string" && typeof container.name === "string" &&
+              Number.isInteger(container.amount) && container.amount > 0 && container.amount <= MAX_INTAKE_ML
+            );
+          } catch (error) {
+            console.error("Could not load saved containers.", error);
+            notice.textContent = "Custom containers could not be loaded.";
+            return [];
           }
         }
 
@@ -476,7 +692,7 @@
           const isLitres = unit === "L";
           mlButton.setAttribute("aria-pressed", String(!isLitres));
           lButton.setAttribute("aria-pressed", String(isLitres));
-          totalUnit.textContent = unit;
+          document.querySelectorAll(".volume-unit").forEach((element) => { element.textContent = unit; });
           goalUnit.textContent = unit;
           goalInput.setAttribute("aria-label", `Daily goal in ${unit}`);
           goalInput.min = isLitres ? "0.001" : "1";
@@ -489,6 +705,21 @@
           customAmount.inputMode = isLitres ? "decimal" : "numeric";
           customAmount.placeholder = `Amount (${unit})`;
           customAmountLabel.textContent = `Custom water amount in ${unit}`;
+          for (const amount of containerAmounts) {
+            amount.min = isLitres ? "0.001" : "1";
+            amount.max = isLitres ? "5" : String(MAX_INTAKE_ML);
+            amount.step = isLitres ? "0.001" : "1";
+            amount.inputMode = isLitres ? "decimal" : "numeric";
+            amount.placeholder = `Amount (${unit})`;
+          }
+          alternativeVolume.min = isLitres ? "0.001" : "1";
+          alternativeVolume.max = isLitres ? "5" : String(MAX_INTAKE_ML);
+          alternativeVolume.step = isLitres ? "0.001" : "1";
+          alternativeVolume.inputMode = isLitres ? "decimal" : "numeric";
+          alternativeVolume.placeholder = `Amount (${unit})`;
+          for (const amount of document.querySelectorAll(".alternative-quick-adds .drink-amount")) {
+            amount.textContent = formatAmount(Number(amount.dataset.ml));
+          }
           for (const amount of quickAddAmounts) {
             amount.textContent = formatAmount(Number(amount.dataset.ml));
           }
@@ -516,28 +747,149 @@
           }
         }
 
-        function render() {
-          const todaysEntries = entries
-            .filter((entry) => entry.date === todayKey)
-            .sort((a, b) => b.time - a.time);
-          const total = todaysEntries.reduce((sum, entry) => sum + entry.amount, 0);
-          const percentage = Math.min(100, Math.round((total / dailyGoal) * 100));
-          const remaining = Math.max(0, dailyGoal - total);
+        function saveContainers() {
+          try {
+            localStorage.setItem(CONTAINERS_KEY, JSON.stringify(containers));
+            return true;
+          } catch (error) {
+            console.error("Could not save custom containers.", error);
+            notice.textContent = "Could not save your container. Check your browser storage settings.";
+            return false;
+          }
+        }
 
-          updateUnitControls();
-          totalElement.textContent = (unit === "L" ? total / 1000 : total).toLocaleString(undefined, {
-            maximumFractionDigits: unit === "L" ? 3 : 0
-          });
-          goalInput.value = formatGoalInput();
-          progressFill.style.width = `${percentage}%`;
-          progressTrack.setAttribute("aria-valuenow", String(percentage));
-          progressMessage.textContent = `${percentage}% of daily goal`;
-          remainingElement.textContent = remaining > 0 ? `${formatAmount(remaining)} to go` : "Goal complete";
-          entryCount.textContent = `${todaysEntries.length} ${todaysEntries.length === 1 ? "entry" : "entries"}`;
-          emptyState.hidden = todaysEntries.length > 0;
+        function renderContainers() {
+          for (const [containerList, type] of [[quickAdds, "water"], [alternativeContainers, "alternative"]]) {
+            containerList.querySelectorAll(".custom-container").forEach((container) => container.remove());
+            for (const container of containers) {
+              const wrapper = document.createElement("div");
+              wrapper.className = "custom-container";
+              const addButton = document.createElement("button");
+              addButton.className = "quick-add";
+              addButton.type = "button";
+              addButton.setAttribute("aria-label", `Add ${container.name}, ${formatAmount(container.amount)}`);
+              const icon = document.createElement("span");
+              icon.className = "drink-icon";
+              icon.setAttribute("aria-hidden", "true");
+              icon.textContent = type === "alternative" ? "🍹" : "💧";
+              const label = document.createElement("span");
+              const name = document.createElement("span");
+              name.className = "drink-name";
+              name.textContent = container.name;
+              const amount = document.createElement("span");
+              amount.className = "drink-amount";
+              amount.textContent = formatAmount(container.amount);
+              label.append(name, amount);
+              addButton.append(icon, label);
+              addButton.addEventListener("click", () => addEntry(container.amount, container.name, type));
+              const removeButton = document.createElement("button");
+              removeButton.className = "container-remove";
+              removeButton.type = "button";
+              removeButton.textContent = "×";
+              removeButton.setAttribute("aria-label", `Remove ${container.name} container`);
+              removeButton.addEventListener("click", () => removeContainer(container.id));
+              wrapper.append(addButton, removeButton);
+              containerList.append(wrapper);
+            }
+          }
+        }
+
+        function dateKeyFor(date) {
+          return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        }
+
+        function entriesForDate(dateKey) {
+          return entries
+            .filter((entry) => entry.date === dateKey)
+            .sort((a, b) => b.time - a.time);
+        }
+
+        function changeMonth(offset) {
+          displayedMonth = new Date(displayedMonth.getFullYear(), displayedMonth.getMonth() + offset, 1);
+          const selectedDay = Number(selectedDate.slice(-2));
+          const day = Math.min(selectedDay, new Date(
+            displayedMonth.getFullYear(),
+            displayedMonth.getMonth() + 1,
+            0
+          ).getDate());
+          selectedDate = dateKeyFor(new Date(displayedMonth.getFullYear(), displayedMonth.getMonth(), day));
+          renderCalendar();
+          renderHistory();
+        }
+
+        function selectDate(dateKey) {
+          selectedDate = dateKey;
+          renderCalendar();
+          renderHistory();
+        }
+
+        function renderCalendar() {
+          const year = displayedMonth.getFullYear();
+          const month = displayedMonth.getMonth();
+          const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+          const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+          const monthStart = new Date(year, month, 1);
+          const monthEnd = new Date(year, month + 1, 1);
+          const monthFormatter = new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" });
+          const dayFormatter = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+          calendarMonth.textContent = monthFormatter.format(displayedMonth);
+          previousMonthButton.disabled = monthStart <= new Date(2000, 0, 1);
+          nextMonthButton.disabled = monthEnd > currentMonthStart;
+          calendarGrid.replaceChildren();
+
+          for (const weekday of ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]) {
+            const heading = document.createElement("span");
+            heading.className = "weekday";
+            heading.textContent = weekday;
+            calendarGrid.append(heading);
+          }
+
+          for (let blank = 0; blank < firstWeekday; blank += 1) {
+            const spacer = document.createElement("span");
+            spacer.setAttribute("aria-hidden", "true");
+            calendarGrid.append(spacer);
+          }
+
+          for (let day = 1; day <= daysInMonth; day += 1) {
+            const date = new Date(year, month, day);
+            const key = dateKeyFor(date);
+            const dayEntries = entriesForDate(key);
+            const hasEntries = dayEntries.length > 0;
+            const button = document.createElement("button");
+            button.className = `calendar-day${hasEntries ? " has-entries" : ""}`;
+            button.type = "button";
+            button.textContent = String(day);
+            button.setAttribute("aria-pressed", String(key === selectedDate));
+            button.setAttribute("aria-label", `${dayFormatter.format(date)}${hasEntries ? `, ${dayEntries.length} drink entries` : ""}`);
+            button.disabled = key > todayKey;
+            button.addEventListener("click", () => selectDate(key));
+            calendarGrid.append(button);
+          }
+        }
+
+        function renderHistory() {
+          const selectedEntries = entriesForDate(selectedDate);
+          const waterTotal = selectedEntries
+            .filter((entry) => entry.type === "water")
+            .reduce((sum, entry) => sum + entry.amount, 0);
+          const alternativeTotal = selectedEntries
+            .filter((entry) => entry.type === "alternative")
+            .reduce((sum, entry) => sum + entry.amount, 0);
+          const selectedDateValue = new Date(`${selectedDate}T00:00:00`);
+          const selectedFormatter = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+          selectedDateLabel.textContent = selectedFormatter.format(selectedDateValue);
+          selectedWater.textContent = formatAmount(waterTotal);
+          selectedAlternative.textContent = formatAmount(alternativeTotal);
+          selectedTotal.textContent = formatAmount(waterTotal + alternativeTotal);
+          historyHeading.textContent = selectedDate === todayKey ? "Today's drinks" : "Drinks";
+          entryCount.textContent = `${selectedEntries.length} ${selectedEntries.length === 1 ? "entry" : "entries"}`;
+          emptyState.hidden = selectedEntries.length > 0;
           historyList.replaceChildren();
 
-          for (const entry of todaysEntries) {
+          for (const entry of selectedEntries) {
             const item = document.createElement("li");
             item.className = "history-item";
             const info = document.createElement("div");
@@ -545,14 +897,18 @@
             const icon = document.createElement("span");
             icon.className = "entry-symbol";
             icon.setAttribute("aria-hidden", "true");
-            icon.textContent = entry.label === "Glass of water" ? "🥛" : entry.label.includes("bottle") ? "🧴" : "💧";
+            icon.textContent = getEntryIcon(entry);
             const text = document.createElement("div");
             const title = document.createElement("div");
             title.className = "entry-title";
             title.textContent = entry.label;
             const time = document.createElement("div");
             time.className = "entry-time";
-            time.textContent = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(entry.time);
+            time.textContent = new Intl.DateTimeFormat(undefined, {
+              hour: "2-digit",
+              minute: "2-digit",
+              hourCycle: "h23"
+            }).format(entry.time);
             text.append(title, time);
             info.append(icon, text);
 
@@ -573,12 +929,61 @@
           }
         }
 
-        function addEntry(amount, label) {
-          if (!Number.isInteger(amount) || amount < 1 || amount > MAX_INTAKE_ML) {
+        function render() {
+          const todaysEntries = entries
+            .filter((entry) => entry.date === todayKey)
+            .sort((a, b) => b.time - a.time);
+          const waterTotal = todaysEntries
+            .filter((entry) => entry.type === "water")
+            .reduce((sum, entry) => sum + entry.amount, 0);
+          const alternativeTotal = todaysEntries
+            .filter((entry) => entry.type === "alternative")
+            .reduce((sum, entry) => sum + entry.amount, 0);
+          const total = waterTotal + alternativeTotal;
+          const percentage = Math.min(100, Math.round((waterTotal / dailyGoal) * 100));
+          const totalPercentage = Math.min(100, (total / dailyGoal) * 100);
+          const remaining = Math.max(0, dailyGoal - waterTotal);
+
+          updateUnitControls();
+          renderContainers();
+          waterElement.textContent = formatValue(waterTotal);
+          alternativeElement.textContent = formatValue(alternativeTotal);
+          totalElement.textContent = formatValue(total);
+          goalInput.value = formatGoalInput();
+          progressFill.style.width = `${percentage}%`;
+          alternativeFill.style.width = `${totalPercentage}%`;
+          progressTrack.setAttribute("aria-valuenow", String(percentage));
+          progressTrack.setAttribute("aria-valuetext", `${formatAmount(waterTotal)} water, ${formatAmount(alternativeTotal)} alternative fluid, ${formatAmount(total)} total`);
+          progressMessage.textContent = `${percentage}% of daily goal`;
+          remainingElement.textContent = remaining > 0 ? `${formatAmount(remaining)} to go` : "Goal complete";
+          renderCalendar();
+          renderHistory();
+        }
+
+        function formatValue(amountMl) {
+          return (unit === "L" ? amountMl / 1000 : amountMl).toLocaleString(undefined, {
+            maximumFractionDigits: unit === "L" ? 3 : 0
+          });
+        }
+
+        function getEntryIcon(entry) {
+          if (entry.type === "alternative") {
+            if (entry.label === "Glass") return "☕";
+            if (entry.label === "Medium bottle") return "🥤";
+            return entry.label === "Large bottle" ? "🧃" : "🍹";
+          }
+          if (entry.label === "Glass of water") return "🥛";
+          if (entry.label === "Medium bottle") return "🧴";
+          return entry.label === "Large bottle" ? "🫙" : "💧";
+        }
+
+        function addEntry(amount, label, type = "water") {
+          const normalizedLabel = label.trim();
+          if (!normalizedLabel || !Number.isInteger(amount) || amount < 1 || amount > MAX_INTAKE_ML) {
             notice.textContent = `Enter an amount from ${unit === "L" ? "0.001 to 5 L" : `1 to ${MAX_INTAKE_ML.toLocaleString()} mL`}.`;
             return;
           }
-          const entry = { id: crypto.randomUUID(), date: todayKey, label, amount, time: Date.now() };
+          const entry = { id: crypto.randomUUID(), date: todayKey, label: normalizedLabel, amount, time: Date.now(), type };
           entries.push(entry);
           if (saveEntries()) {
             notice.textContent = "";
@@ -595,8 +1000,47 @@
           else if (removed) entries.push(removed);
         }
 
-        document.querySelectorAll(".quick-add").forEach((button) => {
-          button.addEventListener("click", () => addEntry(Number(button.dataset.amount), button.dataset.label));
+        function addContainer(name, amount, nameInput) {
+          const normalizedName = name.trim();
+          if (!normalizedName || normalizedName.length > 30 ||
+              !Number.isInteger(amount) || amount < 1 || amount > MAX_INTAKE_ML) {
+            notice.textContent = `Enter a container name and an amount from ${unit === "L" ? "0.001 to 5 L" : `1 to ${MAX_INTAKE_ML.toLocaleString()} mL`}.`;
+            return false;
+          }
+          if (containers.some((container) => container.name.toLocaleLowerCase() === normalizedName.toLocaleLowerCase())) {
+            notice.textContent = "A container with that name already exists.";
+            nameInput.focus();
+            return false;
+          }
+          const container = { id: crypto.randomUUID(), name: normalizedName, amount };
+          containers.push(container);
+          if (!saveContainers()) {
+            containers = containers.filter((saved) => saved.id !== container.id);
+            return false;
+          }
+          notice.textContent = "";
+          render();
+          return true;
+        }
+
+        function removeContainer(id) {
+          const removed = containers.find((container) => container.id === id);
+          containers = containers.filter((container) => container.id !== id);
+          if (saveContainers()) {
+            notice.textContent = "";
+            render();
+          } else if (removed) {
+            containers.push(removed);
+            render();
+          }
+        }
+
+        document.querySelectorAll(".quick-add[data-amount]").forEach((button) => {
+          button.addEventListener("click", () => addEntry(
+            Number(button.dataset.amount),
+            button.dataset.label,
+            button.dataset.type
+          ));
         });
 
         function selectUnit(nextUnit) {
@@ -625,6 +1069,36 @@
           }
           addEntry(amountMl, "Water");
           if (!notice.textContent) customAmount.value = "";
+        });
+
+        containerForms.forEach((form) => {
+          form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            if (!form.reportValidity()) return;
+            const name = form.querySelector(".container-name");
+            const amount = form.querySelector(".container-amount");
+            const amountMl = Math.round(Number(amount.value) * (unit === "L" ? 1000 : 1));
+            if (addContainer(name.value, amountMl, name)) {
+              name.value = "";
+              amount.value = "";
+            }
+          });
+        });
+
+        alternativeForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          if (!alternativeForm.reportValidity()) return;
+          const amountMl = Math.round(Number(alternativeVolume.value) * (unit === "L" ? 1000 : 1));
+          if (amountMl > MAX_INTAKE_ML) {
+            notice.textContent = `Enter an amount no greater than ${unit === "L" ? "5 L" : `${MAX_INTAKE_ML.toLocaleString()} mL`}.`;
+            alternativeVolume.focus();
+            return;
+          }
+          addEntry(amountMl, alternativeName.value.trim(), "alternative");
+          if (!notice.textContent) {
+            alternativeName.value = "";
+            alternativeVolume.value = "";
+          }
         });
 
         goalInput.addEventListener("change", () => {

@@ -1,6 +1,6 @@
 # Blueflow — Water intake tracker
 
-Blueflow is a dark-blue water tracker. Log a 250 mL glass, a 500 mL medium bottle, a 1 L large bottle, or a custom amount, then see today's total and progress toward an editable daily goal. Switch between millilitres and litres at any time; saved amounts remain accurate. Entries can be removed if you log one by mistake.
+Blueflow is a dark-blue fluid tracker. Both the water and alternative-fluid sections offer a 250 mL glass, a 500 mL medium bottle, a 1 L large bottle, custom containers, and custom drink amounts. Alternative fluid examples include coffee, milk, soda, and juice. The dashboard shows water, alternative fluid, and combined fluid totals; its stacked bar shows water in blue and alternative fluid in purple against the daily water goal. Browse the calendar to review each day's totals and drink entries. The editable daily goal tracks water only. Switch between millilitres and litres at any time, and remove individual drink entries if you log one by mistake.
 
 ## Run it
 
