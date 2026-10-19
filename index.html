@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#081321">
+    <title>Blueflow — Water tracker</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #081321;
+        color: #f5f9ff;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --muted: #c0d0e1;
+        --panel: #101f31;
+        --panel-border: #38516b;
+        --blue: #78caff;
+        --blue-strong: #087fc8;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 50% -20%, #15385a 0, transparent 48%),
+          #081321;
+      }
+
+      button, input { font: inherit; }
+      button { color: inherit; }
+
+      .app-shell {
+        width: min(100% - 32px, 720px);
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        place-items: center;
+        border: 1px solid #377ead;
+        border-radius: 16px;
+        background: #102b45;
+      }
+
+      .brand-mark svg { width: 34px; height: 34px; }
+      .brand-name { margin: 0; font-size: 20px; font-weight: 750; letter-spacing: .01em; }
+      .brand-caption { margin: 3px 0 0; color: #d4e3f2; font-size: 13px; font-weight: 550; }
+
+      .header-tools { display: flex; flex-direction: column; align-items: end; gap: 8px; }
+      .date-pill {
+        padding: 8px 11px;
+        border: 1px solid var(--panel-border);
+        border-radius: 999px;
+        color: #f0f6ff;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .card {
+        border: 1px solid #304b67;
+        border-radius: 22px;
+        background: linear-gradient(145deg, #142b43, #102137 70%);
+        box-shadow: 0 20px 60px #00000024;
+      }
+
+      .progress-card { padding: 24px; }
+      .progress-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 12px;
+      }
+
+      .section-label { margin: 0; color: #d5e3f1; font-size: 14px; font-weight: 550; }
+      .total { margin: 7px 0 0; font-size: clamp(38px, 8vw, 46px); font-weight: 780; letter-spacing: -.05em; }
+      .total span { color: #d2e3f3; font-size: 19px; font-weight: 550; letter-spacing: 0; }
+
+      .unit-toggle { display: flex; padding: 4px; border: 1px solid #45617d; border-radius: 12px; background: #0a192a; }
+      .unit-button {
+        min-width: 44px;
+        min-height: 32px;
+        padding: 5px 10px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #d5e3f1;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .unit-button[aria-pressed="true"] { background: #116da8; color: #fff; }
+
+      .goal-editor {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 3px;
+        color: #d5e3f1;
+        font-size: 13px;
+      }
+
+      .goal-editor label { white-space: nowrap; }
+      .goal-editor input {
+        width: 82px;
+        padding: 8px 9px;
+        border: 1px solid #496580;
+        border-radius: 10px;
+        outline: none;
+        background: #091827;
+        color: #fff;
+        text-align: right;
+        font-size: 14px;
+      }
+
+      input:focus-visible, button:focus-visible {
+        outline: 2px solid var(--blue);
+        outline-offset: 3px;
+      }
+
+      .progress-track {
+        height: 11px;
+        margin-top: 20px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: #304a65;
+      }
+
+      .progress-fill {
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #168de0, #63caff);
+        transition: width .35s ease;
+      }
+
+      .progress-caption {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 10px;
+        color: #d5e3f1;
+        font-size: 13px;
+      }
+
+      .add-card { margin-top: 16px; padding: 24px; }
+      h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+      .card-hint { display: none; }
+
+      .quick-adds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+      .quick-add {
+        display: flex;
+        min-height: 82px;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid #385774;
+        border-radius: 14px;
+        background: #132a41;
+        cursor: pointer;
+        text-align: left;
+        transition: border-color .15s ease, background .15s ease, transform .15s ease;
+      }
+
+      .quick-add:hover { transform: translateY(-2px); border-color: #397eb0; background: #142c45; }
+      .drink-icon {
+        display: grid;
+        width: 43px;
+        height: 43px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 13px;
+        background: #19466a;
+        font-size: 22px;
+      }
+
+      .drink-name { display: block; font-size: 14px; font-weight: 700; }
+      .drink-amount { display: block; margin-top: 4px; color: #d5e3f1; font-size: 13px; }
+
+      .custom-form {
+        display: flex;
+        gap: 10px;
+        margin-top: 13px;
+      }
+
+      .custom-form input {
+        min-width: 0;
+        flex: 1;
+        padding: 12px 13px;
+        border: 1px solid #496580;
+        border-radius: 12px;
+        outline: none;
+        background: #091827;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      .custom-form input::placeholder { color: #bdcfe1; }
+      .primary-button {
+        padding: 0 20px;
+        border: 0;
+        border-radius: 11px;
+        background: var(--blue-strong);
+        color: white;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        transition: background .15s ease;
+      }
+
+      .primary-button:hover { background: #32a5f3; }
+
+      .history-card { margin-top: 16px; padding: 23px 24px; }
+      .history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .entry-count { color: #d5e3f1; font-size: 13px; }
+      .history-list { margin: 13px 0 0; padding: 0; list-style: none; }
+      .history-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 0;
+        border-top: 1px solid #344e68;
+      }
+
+      .history-item:first-child { border-top: 0; }
+      .entry-info { display: flex; align-items: center; gap: 11px; min-width: 0; }
+      .entry-symbol {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        flex: 0 0 auto;
+        place-items: center;
+        border-radius: 11px;
+        background: #1c3c5a;
+      }
+
+      .entry-title { overflow: hidden; font-size: 14px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+      .entry-time { margin-top: 4px; color: #c6d7e8; font-size: 13px; }
+      .entry-right { display: flex; align-items: center; gap: 12px; }
+      .entry-volume { font-size: 14px; font-weight: 700; white-space: nowrap; }
+      .remove-button {
+        width: 30px;
+        height: 30px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        background: transparent;
+        color: #d5e3f1;
+        cursor: pointer;
+        font-size: 17px;
+      }
+
+      .remove-button:hover { border-color: #a95a67; background: #512d37; color: #fff; }
+      .empty-state { padding: 18px 0 5px; border-top: 1px solid #344e68; color: #d5e3f1; font-size: 14px; text-align: center; }
+      .notice { min-height: 0; margin: 0; color: #ffc0c5; font-size: 13px; }
+      .notice:not(:empty) { margin-top: 12px; }
+
+      @media (max-width: 480px) {
+        .app-shell { width: min(100% - 24px, 680px); padding-top: 24px; }
+        header { margin-bottom: 28px; }
+        .date-pill { padding: 7px 9px; font-size: 12px; }
+        .progress-card, .add-card, .history-card { padding: 18px; }
+        .progress-heading { align-items: start; }
+        .quick-adds { gap: 8px; }
+        .quick-add { min-height: 94px; flex-direction: column; justify-content: center; gap: 5px; padding: 8px 4px; text-align: center; }
+        .drink-icon { width: 34px; height: 34px; font-size: 19px; }
+        .drink-name { font-size: 13px; }
+        .drink-amount { font-size: 12px; }
+        .custom-form { gap: 8px; }
+        .primary-button { padding-inline: 14px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header>
+        <div class="brand" aria-label="Blueflow water tracker">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none">
+              <path d="M3 13.5C7 13.5 7 9.5 11 9.5s4 4 8 4 4-4 8-4 4 4 6 4" stroke="#8BD7FF" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M3 22C7 22 7 18 11 18s4 4 8 4 4-4 8-4 4 4 6 4" stroke="#42B8F4" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <div>
+            <p class="brand-name">Blueflow</p>
+            <p class="brand-caption">Water tracker</p>
+          </div>
+        </div>
+        <div class="header-tools">
+          <time class="date-pill" id="today-date"></time>
+          <div class="unit-toggle" role="group" aria-label="Volume unit">
+            <button class="unit-button" id="ml-button" type="button" aria-pressed="true">mL</button>
+            <button class="unit-button" id="l-button" type="button" aria-pressed="false">L</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="card progress-card" aria-labelledby="progress-heading">
+        <div class="progress-heading">
+          <div>
+            <p class="section-label" id="progress-heading">Today's intake</p>
+            <p class="total"><span id="total-amount">0</span> <span id="total-unit">mL</span></p>
+          </div>
+          <div class="goal-editor">
+            <label for="goal-input">Daily goal</label>
+            <input id="goal-input" type="number" min="1" max="20000" step="50" inputmode="decimal" aria-label="Daily goal in millilitres">
+            <span id="goal-unit">mL</span>
+          </div>
+        </div>
+        <div class="progress-track" id="progress-track" role="progressbar" aria-label="Daily water goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-caption">
+          <span id="progress-message">0% of daily goal</span>
+          <span id="remaining-amount"></span>
+        </div>
+      </section>
+
+      <section class="card add-card" aria-labelledby="add-heading">
+        <h2 id="add-heading">Add water</h2>
+        <div class="quick-adds">
+          <button class="quick-add" type="button" data-amount="250" data-label="Glass of water">
+            <span class="drink-icon" aria-hidden="true">🥛</span>
+            <span><span class="drink-name">Glass</span><span class="drink-amount" data-ml="250">250 mL</span></span>
+          </button>
+          <button class="quick-add" type="button" data-amount="500" data-label="Medium bottle">
+            <span class="drink-icon" aria-hidden="true">🧴</span>
+            <span><span class="drink-name">Medium bottle</span><span class="drink-amount" data-ml="500">500 mL</span></span>
+          </button>
+          <button class="quick-add" type="button" data-amount="1000" data-label="Large bottle">
+            <span class="drink-icon" aria-hidden="true">🧴</span>
+            <span><span class="drink-name">Large bottle</span><span class="drink-amount" data-ml="1000">1,000 mL</span></span>
+          </button>
+        </div>
+        <form class="custom-form" id="custom-form">
+          <label for="custom-amount" class="visually-hidden">Custom water amount</label>
+          <input id="custom-amount" type="number" min="1" max="5000" step="1" placeholder="Amount (mL)" inputmode="numeric" required>
+          <button class="primary-button" type="submit">Add</button>
+        </form>
+        <p class="notice" id="notice" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="card history-card" aria-labelledby="history-heading">
+        <div class="history-heading">
+          <h2 id="history-heading">Today</h2>
+          <span class="entry-count" id="entry-count">0 entries</span>
+        </div>
+        <ul class="history-list" id="history-list"></ul>
+        <p class="empty-state" id="empty-state">No drinks yet</p>
+      </section>
+    </main>
+
+    <style>
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+    <script>
+      (() => {
+        const ENTRIES_KEY = "blueflow.entries";
+        const GOAL_KEY = "blueflow.goal";
+        const UNIT_KEY = "blueflow.unit";
+        const DEFAULT_GOAL_ML = 2000;
+        const MAX_INTAKE_ML = 5000;
+        const dateElement = document.querySelector("#today-date");
+        const totalElement = document.querySelector("#total-amount");
+        const totalUnit = document.querySelector("#total-unit");
+        const goalInput = document.querySelector("#goal-input");
+        const goalUnit = document.querySelector("#goal-unit");
+        const mlButton = document.querySelector("#ml-button");
+        const lButton = document.querySelector("#l-button");
+        const progressTrack = document.querySelector("#progress-track");
+        const progressFill = document.querySelector("#progress-fill");
+        const progressMessage = document.querySelector("#progress-message");
+        const remainingElement = document.querySelector("#remaining-amount");
+        const historyList = document.querySelector("#history-list");
+        const emptyState = document.querySelector("#empty-state");
+        const entryCount = document.querySelector("#entry-count");
+        const notice = document.querySelector("#notice");
+        const customForm = document.querySelector("#custom-form");
+        const customAmount = document.querySelector("#custom-amount");
+        const customAmountLabel = document.querySelector('label[for="custom-amount"]');
+        const quickAddAmounts = document.querySelectorAll(".drink-amount");
+        const today = new Date();
+        const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+        const dateFormatter = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" });
+        let entries = readEntries();
+        let dailyGoal = readGoal();
+        let unit = readUnit();
+
+        dateElement.dateTime = todayKey;
+        dateElement.textContent = dateFormatter.format(today);
+
+        function readEntries() {
+          try {
+            const saved = JSON.parse(localStorage.getItem(ENTRIES_KEY) || "[]");
+            if (!Array.isArray(saved)) throw new Error("Saved water entries are not a list.");
+            return saved.filter((entry) =>
+              entry && typeof entry.id === "string" && typeof entry.date === "string" &&
+              typeof entry.label === "string" && Number.isFinite(entry.amount) &&
+              Number.isFinite(entry.time) && entry.amount > 0
+            );
+          } catch (error) {
+            console.error("Could not load saved water entries.", error);
+            notice.textContent = "Saved entries could not be loaded. You can still add water.";
+            return [];
+          }
+        }
+
+        function readGoal() {
+          try {
+            const saved = Number(localStorage.getItem(GOAL_KEY));
+            return Number.isInteger(saved) && saved > 0 && saved <= 20000 ? saved : DEFAULT_GOAL_ML;
+          } catch (error) {
+            console.error("Could not load the saved daily goal.", error);
+            return DEFAULT_GOAL_ML;
+          }
+        }
+
+        function readUnit() {
+          try {
+            const saved = localStorage.getItem(UNIT_KEY);
+            return saved === "L" ? "L" : "mL";
+          } catch (error) {
+            console.error("Could not load the selected volume unit.", error);
+            return "mL";
+          }
+        }
+
+        function formatAmount(amountMl) {
+          const value = unit === "L" ? amountMl / 1000 : amountMl;
+          const formatted = value.toLocaleString(undefined, {
+            maximumFractionDigits: unit === "L" ? 3 : 0
+          });
+          return `${formatted} ${unit}`;
+        }
+
+        function formatGoalInput() {
+          return unit === "L" ? String(dailyGoal / 1000) : String(dailyGoal);
+        }
+
+        function updateUnitControls() {
+          const isLitres = unit === "L";
+          mlButton.setAttribute("aria-pressed", String(!isLitres));
+          lButton.setAttribute("aria-pressed", String(isLitres));
+          totalUnit.textContent = unit;
+          goalUnit.textContent = unit;
+          goalInput.setAttribute("aria-label", `Daily goal in ${unit}`);
+          goalInput.min = isLitres ? "0.001" : "1";
+          goalInput.max = isLitres ? "20" : "20000";
+          goalInput.step = isLitres ? "0.001" : "1";
+          goalInput.inputMode = isLitres ? "decimal" : "numeric";
+          customAmount.min = isLitres ? "0.001" : "1";
+          customAmount.max = isLitres ? "5" : String(MAX_INTAKE_ML);
+          customAmount.step = isLitres ? "0.001" : "1";
+          customAmount.inputMode = isLitres ? "decimal" : "numeric";
+          customAmount.placeholder = `Amount (${unit})`;
+          customAmountLabel.textContent = `Custom water amount in ${unit}`;
+          for (const amount of quickAddAmounts) {
+            amount.textContent = formatAmount(Number(amount.dataset.ml));
+          }
+        }
+
+        function saveEntries() {
+          try {
+            localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries));
+            return true;
+          } catch (error) {
+            console.error("Could not save water entries.", error);
+            notice.textContent = "Could not save your change. Check your browser storage settings.";
+            return false;
+          }
+        }
+
+        function saveGoal() {
+          try {
+            localStorage.setItem(GOAL_KEY, String(dailyGoal));
+            return true;
+          } catch (error) {
+            console.error("Could not save the daily goal.", error);
+            notice.textContent = "Could not save your goal. Check your browser storage settings.";
+            return false;
+          }
+        }
+
+        function render() {
+          const todaysEntries = entries
+            .filter((entry) => entry.date === todayKey)
+            .sort((a, b) => b.time - a.time);
+          const total = todaysEntries.reduce((sum, entry) => sum + entry.amount, 0);
+          const percentage = Math.min(100, Math.round((total / dailyGoal) * 100));
+          const remaining = Math.max(0, dailyGoal - total);
+
+          updateUnitControls();
+          totalElement.textContent = (unit === "L" ? total / 1000 : total).toLocaleString(undefined, {
+            maximumFractionDigits: unit === "L" ? 3 : 0
+          });
+          goalInput.value = formatGoalInput();
+          progressFill.style.width = `${percentage}%`;
+          progressTrack.setAttribute("aria-valuenow", String(percentage));
+          progressMessage.textContent = `${percentage}% of daily goal`;
+          remainingElement.textContent = remaining > 0 ? `${formatAmount(remaining)} to go` : "Goal complete";
+          entryCount.textContent = `${todaysEntries.length} ${todaysEntries.length === 1 ? "entry" : "entries"}`;
+          emptyState.hidden = todaysEntries.length > 0;
+          historyList.replaceChildren();
+
+          for (const entry of todaysEntries) {
+            const item = document.createElement("li");
+            item.className = "history-item";
+            const info = document.createElement("div");
+            info.className = "entry-info";
+            const icon = document.createElement("span");
+            icon.className = "entry-symbol";
+            icon.setAttribute("aria-hidden", "true");
+            icon.textContent = entry.label === "Glass of water" ? "🥛" : entry.label.includes("bottle") ? "🧴" : "💧";
+            const text = document.createElement("div");
+            const title = document.createElement("div");
+            title.className = "entry-title";
+            title.textContent = entry.label;
+            const time = document.createElement("div");
+            time.className = "entry-time";
+            time.textContent = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(entry.time);
+            text.append(title, time);
+            info.append(icon, text);
+
+            const right = document.createElement("div");
+            right.className = "entry-right";
+            const volume = document.createElement("span");
+            volume.className = "entry-volume";
+            volume.textContent = formatAmount(entry.amount);
+            const remove = document.createElement("button");
+            remove.className = "remove-button";
+            remove.type = "button";
+            remove.textContent = "×";
+            remove.setAttribute("aria-label", `Remove ${entry.label}, ${formatAmount(entry.amount)}`);
+            remove.addEventListener("click", () => removeEntry(entry.id));
+            right.append(volume, remove);
+            item.append(info, right);
+            historyList.append(item);
+          }
+        }
+
+        function addEntry(amount, label) {
+          if (!Number.isInteger(amount) || amount < 1 || amount > MAX_INTAKE_ML) {
+            notice.textContent = `Enter an amount from ${unit === "L" ? "0.001 to 5 L" : `1 to ${MAX_INTAKE_ML.toLocaleString()} mL`}.`;
+            return;
+          }
+          const entry = { id: crypto.randomUUID(), date: todayKey, label, amount, time: Date.now() };
+          entries.push(entry);
+          if (saveEntries()) {
+            notice.textContent = "";
+            render();
+          } else {
+            entries = entries.filter((saved) => saved.id !== entry.id);
+          }
+        }
+
+        function removeEntry(id) {
+          const removed = entries.find((entry) => entry.id === id);
+          entries = entries.filter((entry) => entry.id !== id);
+          if (saveEntries()) render();
+          else if (removed) entries.push(removed);
+        }
+
+        document.querySelectorAll(".quick-add").forEach((button) => {
+          button.addEventListener("click", () => addEntry(Number(button.dataset.amount), button.dataset.label));
+        });
+
+        function selectUnit(nextUnit) {
+          unit = nextUnit;
+          try {
+            localStorage.setItem(UNIT_KEY, unit);
+            notice.textContent = "";
+          } catch (error) {
+            console.error("Could not save the selected volume unit.", error);
+            notice.textContent = "Could not save the selected unit.";
+          }
+          render();
+        }
+
+        mlButton.addEventListener("click", () => selectUnit("mL"));
+        lButton.addEventListener("click", () => selectUnit("L"));
+
+        customForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          if (!customForm.reportValidity()) return;
+          const amountMl = Math.round(Number(customAmount.value) * (unit === "L" ? 1000 : 1));
+          if (amountMl > MAX_INTAKE_ML) {
+            notice.textContent = `Enter an amount no greater than ${unit === "L" ? "5 L" : `${MAX_INTAKE_ML.toLocaleString()} mL`}.`;
+            customAmount.focus();
+            return;
+          }
+          addEntry(amountMl, "Water");
+          if (!notice.textContent) customAmount.value = "";
+        });
+
+        goalInput.addEventListener("change", () => {
+          const enteredGoal = Number(goalInput.value);
+          const goal = Math.round(enteredGoal * (unit === "L" ? 1000 : 1));
+          if (!Number.isFinite(enteredGoal) || goal < 1 || goal > 20000 || (unit === "mL" && !Number.isInteger(enteredGoal))) {
+            notice.textContent = `Daily goal must be between ${unit === "L" ? "0.001 and 20 L" : "1 and 20,000 mL"}.`;
+            goalInput.value = formatGoalInput();
+            return;
+          }
+          const previousGoal = dailyGoal;
+          dailyGoal = goal;
+          if (saveGoal()) {
+            notice.textContent = "";
+            render();
+          } else {
+            dailyGoal = previousGoal;
+            goalInput.value = formatGoalInput();
+            render();
+          }
+        });
+
+        render();
+      })();
+    </script>
+  </body>
+</html>
