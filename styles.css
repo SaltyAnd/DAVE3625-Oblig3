@@ -1,0 +1,811 @@
+/* Shared colors and base page styles */
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #081321;
+  color: #f5f9ff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --muted: #c0d0e1;
+  --panel: #101f31;
+  --panel-border: #38516b;
+  --blue: #78caff;
+  --blue-strong: #087fc8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% -20%, #15385a 0, transparent 48%),
+    #081321;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+/* Header, brand mark, and date/unit controls */
+.app-shell {
+  width: min(100% - 32px, 720px);
+  margin: 0 auto;
+  padding: 32px 0 48px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid #377ead;
+  border-radius: 16px;
+  background: #102b45;
+}
+
+.brand-mark svg {
+  width: 34px;
+  height: 34px;
+}
+
+.brand-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: .01em;
+}
+
+.brand-caption {
+  margin: 3px 0 0;
+  color: #d4e3f2;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.header-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 8px;
+}
+
+.date-pill {
+  padding: 8px 11px;
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  color: #f0f6ff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Shared card surface and daily progress summary */
+.card {
+  border: 1px solid #304b67;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #142b43, #102137 70%);
+  box-shadow: 0 20px 60px #00000024;
+}
+
+.progress-card {
+  padding: 24px;
+}
+
+.progress-heading {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+}
+
+.intake-metric, .goal-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.intake-metric + .intake-metric {
+  border-left: 1px solid #344e68;
+}
+
+.section-label {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 550;
+}
+
+.total {
+  margin: 9px 0 0;
+  font-size: clamp(28px, 7.5vw, 40px);
+  font-weight: 780;
+  letter-spacing: -.04em;
+}
+
+.total span {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.goal-metric {
+  margin-top: 20px;
+}
+
+.goal-metric .section-label {
+  margin-bottom: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.unit-toggle {
+  display: flex;
+  padding: 4px;
+  border: 1px solid #45617d;
+  border-radius: 12px;
+  background: #0a192a;
+}
+
+.unit-button {
+  min-width: 44px;
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.unit-button[aria-pressed="true"] {
+  background: #116da8;
+  color: #fff;
+}
+
+.goal-editor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.goal-editor label {
+  white-space: nowrap;
+}
+
+.goal-editor input {
+  width: 82px;
+  padding: 8px 9px;
+  border: 1px solid #496580;
+  border-radius: 10px;
+  outline: none;
+  background: #091827;
+  color: #fff;
+  text-align: right;
+  font-size: 16px;
+}
+
+input:focus-visible, button:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+/* Stacked water and alternative-fluid progress bar */
+.progress-track {
+  position: relative;
+  height: 11px;
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #304a65;
+}
+
+.progress-fill, .alternative-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: width .35s ease;
+}
+
+.alternative-fill {
+  left: 0;
+  width: 0;
+  background: #a56bdf;
+}
+
+.progress-fill {
+  left: 0;
+  width: 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #168de0, #63caff);
+  transition: width .35s ease;
+}
+
+.progress-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.progress-legend {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 11px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #168de0, #63caff);
+}
+
+.legend-swatch.alternative {
+  background: #a56bdf;
+}
+/* Calendar navigation, day grid, and selected-day totals */
+.calendar-card, .history-card {
+  margin-top: 16px;
+  padding: 23px 24px;
+}
+
+.calendar-heading, .month-navigation, .history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.calendar-heading h2 {
+  margin-bottom: 0;
+}
+
+.month-navigation {
+  justify-content: end;
+}
+
+.month-label {
+  min-width: 130px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 650;
+  text-align: center;
+}
+
+.month-button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #496580;
+  border-radius: 10px;
+  background: #091827;
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.month-button:disabled {
+  opacity: .4;
+  cursor: default;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.weekday, .calendar-day {
+  display: grid;
+  min-height: 38px;
+  place-items: center;
+}
+
+.weekday {
+  color: #d5e3f1;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.calendar-day {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.calendar-day:hover:not(:disabled) {
+  border-color: #507293;
+  background: #183550;
+}
+
+.calendar-day[aria-pressed="true"] {
+  border-color: #60bfff;
+  background: #116da8;
+  font-weight: 750;
+}
+
+.calendar-day:disabled {
+  color: #71849a;
+  cursor: default;
+}
+
+.calendar-day.has-entries::after {
+  position: absolute;
+  bottom: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c69aff;
+  content: "";
+}
+
+.selected-day-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 15px;
+  padding-top: 14px;
+  border-top: 1px solid #344e68;
+  color: #fff;
+  font-size: 13px;
+}
+
+.selected-day-summary span {
+  color: #d5e3f1;
+}
+/* Drink shortcuts, custom containers, and add forms */
+.add-card {
+  margin-top: 16px;
+  padding: 24px;
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  letter-spacing: -.02em;
+}
+
+.history-heading h2 {
+  margin-bottom: 0;
+}
+
+.heading-examples {
+  color: #d5e3f1;
+  font-size: 15px;
+  font-weight: 550;
+  letter-spacing: 0;
+}
+
+.card-hint {
+  display: none;
+}
+
+.quick-adds {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.quick-add {
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #385774;
+  border-radius: 14px;
+  background: #132a41;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+
+.quick-add:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: #397eb0;
+  background: #142c45;
+}
+
+.quick-add:disabled,
+.primary-button:disabled,
+.remove-button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.custom-container {
+  position: relative;
+  min-width: 0;
+}
+
+.custom-container .quick-add {
+  width: 100%;
+  min-height: 82px;
+  padding-right: 34px;
+}
+
+.container-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border: 1px solid #496580;
+  border-radius: 8px;
+  background: #091827;
+  color: #e4eef8;
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.container-remove:hover {
+  border-color: #a95a67;
+  background: #512d37;
+  color: #fff;
+}
+
+.container-form, .alternative-form {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) minmax(100px, .8fr) auto;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.alternative-card {
+  margin-top: 16px;
+  padding: 24px;
+}
+
+.alternative-card .container-heading {
+  margin-top: 14px;
+}
+
+.drink-icon {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: #19466a;
+  font-size: 22px;
+}
+
+.drink-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.drink-amount {
+  display: block;
+  margin-top: 4px;
+  color: #d5e3f1;
+  font-size: 13px;
+}
+
+.container-heading {
+  margin: 18px 0 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.custom-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 13px;
+}
+
+.custom-form input {
+  flex: 1;
+}
+
+.custom-form input, .container-form input, .alternative-form input {
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid #496580;
+  border-radius: 12px;
+  outline: none;
+  background: #091827;
+  color: #fff;
+  font-size: 14px;
+}
+
+.custom-form input::placeholder {
+  color: #bdcfe1;
+}
+
+.container-form input::placeholder, .alternative-form input::placeholder {
+  color: #bdcfe1;
+}
+
+.primary-button {
+  padding: 0 20px;
+  border: 0;
+  border-radius: 11px;
+  background: var(--blue-strong);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background .15s ease;
+}
+
+.primary-button:hover {
+  background: #32a5f3;
+}
+/* Logged drink list and feedback messages */
+.entry-count {
+  color: #d5e3f1;
+  font-size: 13px;
+}
+
+.history-list {
+  margin: 13px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid #344e68;
+}
+
+.history-item:first-child {
+  border-top: 0;
+}
+
+.entry-info {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.entry-symbol {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  background: #1c3c5a;
+}
+
+.entry-title {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entry-time {
+  margin-top: 4px;
+  color: #c6d7e8;
+  font-size: 13px;
+}
+
+.entry-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.entry-volume {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.remove-button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: #d5e3f1;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.remove-button:hover {
+  border-color: #a95a67;
+  background: #512d37;
+  color: #fff;
+}
+
+.empty-state {
+  padding: 18px 0 5px;
+  border-top: 1px solid #344e68;
+  color: #d5e3f1;
+  font-size: 14px;
+  text-align: center;
+}
+
+.notice {
+  min-height: 0;
+  margin: 0;
+  color: #ffc0c5;
+  font-size: 13px;
+}
+
+.notice:not(:empty) {
+  margin-top: 12px;
+}
+/* Compact layout for phones */
+@media (max-width: 480px) {
+  .app-shell {
+    width: min(100% - 24px, 680px);
+    padding-top: 24px;
+  }
+
+  header {
+    margin-bottom: 28px;
+  }
+
+  .date-pill {
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .progress-card, .add-card, .history-card, .calendar-card {
+    padding: 18px;
+  }
+
+  .progress-heading {
+    gap: 4px;
+  }
+
+  .section-label {
+    font-size: 14px;
+  }
+
+  .total {
+    font-size: clamp(27px, 7.5vw, 32px);
+  }
+
+  .total span {
+    font-size: 14px;
+  }
+
+  .goal-metric {
+    margin-top: 17px;
+  }
+
+  .quick-adds {
+    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    gap: 8px;
+  }
+
+  .quick-add {
+    min-height: 94px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 4px;
+    text-align: center;
+  }
+
+  .custom-container .quick-add {
+    min-height: 94px;
+    padding: 8px 27px 8px 4px;
+  }
+
+  .drink-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 19px;
+  }
+
+  .drink-name {
+    font-size: 13px;
+  }
+
+  .drink-amount {
+    font-size: 13px;
+  }
+
+  .custom-form {
+    gap: 8px;
+  }
+
+  .container-form, .alternative-form {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .container-form .primary-button, .alternative-form .primary-button {
+    min-height: 42px;
+    grid-column: 1 / -1;
+  }
+
+  .primary-button {
+    padding-inline: 14px;
+  }
+
+  .calendar-grid {
+    gap: 3px;
+  }
+
+  .weekday, .calendar-day {
+    min-height: 36px;
+  }
+
+  .selected-day-summary {
+    flex-wrap: wrap;
+  }
+}
+
+/* Respect the visitor's reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Keep form labels available to assistive technology */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
